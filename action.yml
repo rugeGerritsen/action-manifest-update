@@ -1,0 +1,30 @@
+name: 'Manifest-updater'
+inputs:
+  github-token:
+    description: 'The token to authenticate with'
+  module-path:
+    description: 'Path to module, ex: nrfconnect/sdk-nrfxlib'
+  manifest-repo-path: 
+    description: 'Path to manifest repo, ex: nrfconnect/sdk-nrf'
+  manifest-file:
+    description: 'ex: west.yml'
+  module-pull-nr:
+    description: 'Pull request number'
+runs:
+  using: "composite"
+  steps:
+    - id: setup-python
+      run: |
+        pip3 install setuptools wheel
+        pip3 install -r ${{ github.action_path }}/requirements.txt
+      shell: bash
+    - name: Printer
+      run: |
+        python3 ${{ github.action_path }}/manifest_update.py \
+        --module-path ${{ inputs.module-path }} \
+        --manifest-repo-path ${{ inputs.manifest-repo-path }} \
+        --manifest-file ${{ inputs.manifest-file }} \
+        --module-pull-nr ${{ inputs.module-pull-nr }}
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
